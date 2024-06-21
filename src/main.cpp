@@ -84,7 +84,7 @@ void command_busport_set( String commandline );
 
 
 // actual testing commands
-void command_test_gate_1to1( uint8_t inputpin , uint8_t outputpin );
+uint8_t command_test_gate_1to1( uint8_t inputpin , uint8_t outputpin );
 
 void command_sweep_gate_1to1( uint8_t inputpin , uint8_t outputpin );
 
@@ -92,7 +92,12 @@ void command_sweep_gate_1to1( uint8_t inputpin , uint8_t outputpin );
 uint8_t command_test_gate_2to1( uint8_t inputpin_0 , uint8_t inputpin_1 , uint8_t outputpin );
 
 
+
+void util_disconnect();
+
 void test_7400();
+void test_7402();
+void test_7404();
 
 void test_self();
 
@@ -184,6 +189,10 @@ void loop() {
   if ( commandline.startsWith( "testself" ) ) { test_self(); }
 
   if ( commandline.startsWith( "test7400" ) ) { test_7400(); }
+  
+  if ( commandline.startsWith( "test7402" ) ) { test_7402(); }
+
+  if ( commandline.startsWith( "test7404" ) ) { test_7404(); }
 
 
 }
@@ -533,16 +542,17 @@ void command_busport_set( String commandline ) {
 
 };
 
-void command_test_gate_1to1( uint8_t inputpin , uint8_t outputpin ) {
+uint8_t command_test_gate_1to1( uint8_t inputpin , uint8_t outputpin ) {
 
+  uint8_t result = 0;
 
-  Serial.print( "Single gate test 1 to 1.  Using input " );
-  Serial.print( inputpin );
-  Serial.print( " to output " );
-  Serial.print( outputpin );
-  Serial.println( "." );
-  Serial.println();
-  Serial.println( "Input\tOutput");
+  // Serial.print( "Single gate test 1 to 1.  Using input " );
+  // Serial.print( inputpin );
+  // Serial.print( " to output " );
+  // Serial.print( outputpin );
+  // Serial.println( "." );
+  // Serial.println();
+  // Serial.println( "Input\tOutput");
 
   // connect input pin to V_MVC_VCC_0
   i2cbusmaster.enable_bus(2);
@@ -564,21 +574,23 @@ void command_test_gate_1to1( uint8_t inputpin , uint8_t outputpin ) {
   i2cbusmaster.enable_bus(0);
   i2cbusport.busobj_C_v_mvc_vcc_0_dac.setvalue( 0 );
   delay(1);
-  Serial.print( "0\t" );
+  // Serial.print( "0\t" );
 
   // measure MVC_LEDTOGND_0
   i2cbusmaster.enable_bus(1);
-  Serial.println( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() > 2.5 ? "1" : "0" );
+  // Serial.println( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() > 2.5 ? "1" : "0" );
+  result |= ( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() > 2.5 ? 1 : 0 );
 
   // set V_MVC_VCC_0 to 4095
   i2cbusmaster.enable_bus(0);
   i2cbusport.busobj_C_v_mvc_vcc_0_dac.setvalue( 4095 );
   delay(1);
-  Serial.print( "1\t" );
+  // Serial.print( "1\t" );
 
   // measure MVC_LEDTOGND_0
   i2cbusmaster.enable_bus(1);
-  Serial.println( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() > 2.5 ? "1" : "0" );
+  // Serial.println( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() > 2.5 ? "1" : "0" );
+  result |= ( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() > 2.5 ? 1 : 0 ) << 1;
 
   // now turn things back off
   
@@ -597,7 +609,8 @@ void command_test_gate_1to1( uint8_t inputpin , uint8_t outputpin ) {
   i2czifsocklibobj.pin_to_bus( outputpin , BUSPORT_GND );
 
   // and now return
-  Serial.println("Done!");
+  //Serial.println("Done!");
+  return result;
 }
 
 void command_sweep_gate_1to1( uint8_t inputpin , uint8_t outputpin ) {
@@ -744,6 +757,17 @@ uint8_t command_test_gate_2to1( uint8_t inputpin_0 , uint8_t inputpin_1 , uint8_
 
 
 
+void util_disconnect() {
+    // disconnect!
+  i2cbusmaster.enable_bus(2);
+  for ( uint8_t loopcounter = 0 ; loopcounter < 16 ; loopcounter++ ) {
+    i2czifsocklibobj.pin_to_bus( loopcounter , BUSPORT_NC );
+    i2czifsocklibobj.disable_pin( loopcounter );
+  }
+}
+
+
+
 
 void test_self() {
 
@@ -758,7 +782,7 @@ void test_self() {
   command_test_gate_1to1( 6 , 9 );
   command_test_gate_1to1( 7 , 8 );
   
-
+  util_disconnect();
 }
 
 
@@ -862,15 +886,216 @@ void test_7400() {
   Serial.println( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() );
 
 
-  // disconnect!
-  i2cbusmaster.enable_bus(2);
-  for ( uint8_t loopcounter = 0 ; loopcounter < 16 ; loopcounter++ ) {
-    i2czifsocklibobj.pin_to_bus( loopcounter , BUSPORT_NC );
-    i2czifsocklibobj.disable_pin( loopcounter );
-  }
-
-
+  util_disconnect();
 
 }
 
 
+
+
+
+
+
+
+
+
+
+
+void test_7402() {
+
+  Serial.println("Testing 7402 Chip!");
+
+  uint8_t dut_vcc = 15;
+  uint8_t dut_gnd = 6;
+
+  uint8_t dut_gate[4][3] = {  
+                              { 1 , 2 , 0 } ,
+                              { 4 , 5 , 3 } ,
+                              { 9 , 10 , 11 } ,
+                              { 12 , 13 , 14 }
+                           };
+
+
+  // set up the chip
+
+  // switch to busport
+  i2cbusmaster.enable_bus(2);
+
+  // vcc
+  i2czifsocklibobj.pin_to_bus( dut_vcc , BUSPORT_MVC_VCC );
+  i2czifsocklibobj.enable_pin( dut_vcc );
+
+  // gnd
+  i2czifsocklibobj.pin_to_bus( dut_gnd , BUSPORT_MVC_LEDTOGND_1 );
+  i2czifsocklibobj.enable_pin( dut_gnd );
+
+  // set pins to input high so output low
+  for ( uint8_t loopcounter = 0 ; loopcounter < 4 ; loopcounter++ ) {
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][0] , BUSPORT_VCC );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][0] );
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][1] , BUSPORT_VCC );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][1] );
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][2] , BUSPORT_GND );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][2] );
+  }
+
+
+  for ( uint8_t loopcounter = 0 ; loopcounter < 4 ; loopcounter++ ) {
+    Serial.print( "Gate " );
+    Serial.print( loopcounter );
+    Serial.print( " test: " );
+    uint8_t result = command_test_gate_2to1( dut_gate[loopcounter][0] , dut_gate[loopcounter][1] , dut_gate[loopcounter][2] );
+    showbin( result );
+    Serial.print( " : " );
+    Serial.print( result == 0b00000001 ? "Pass." : "Fail!" );
+    Serial.println();
+  }
+
+
+
+  // set up the chip
+
+  // switch to busport
+  i2cbusmaster.enable_bus(2);
+
+  // vcc
+  i2czifsocklibobj.pin_to_bus( dut_vcc , BUSPORT_MVC_VCC );
+  i2czifsocklibobj.enable_pin( dut_vcc );
+
+  // gnd
+  i2czifsocklibobj.pin_to_bus( dut_gnd , BUSPORT_MVC_LEDTOGND_1 );
+  i2czifsocklibobj.enable_pin( dut_gnd );
+
+  // set pins to input high so output low
+  for ( uint8_t loopcounter = 0 ; loopcounter < 4 ; loopcounter++ ) {
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][0] , BUSPORT_VCC );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][0] );
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][1] , BUSPORT_VCC );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][1] );
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][2] , BUSPORT_GND );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][2] );
+  }
+
+
+  // turn on gate 0
+  i2czifsocklibobj.pin_to_bus( dut_gate[0][0] , BUSPORT_GND );
+  i2czifsocklibobj.pin_to_bus( dut_gate[0][1] , BUSPORT_GND );
+  i2czifsocklibobj.pin_to_bus( dut_gate[0][2] , BUSPORT_MVC_LEDTOGND_0 );
+  
+  // print VCC reference
+  i2cbusport.switchto( BUSPORT_MVC_VCC );
+  Serial.print( "VCC: " );
+  Serial.println( i2cbusport.busobj_B_mvc_vcc.getbusvoltage() );
+  
+  // print gate output
+  i2cbusport.switchto( BUSPORT_MVC_LEDTOGND_0 );
+  Serial.print( "Gate: " );
+  Serial.println( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() );
+
+
+  util_disconnect();
+
+}
+
+
+
+
+
+
+void test_7404() {
+
+  Serial.println("Testing 7404 Chip!");
+
+  uint8_t dut_vcc = 15;
+  uint8_t dut_gnd = 6;
+
+  uint8_t dut_gate[6][2] = {  
+                              { 0 , 1 } ,
+                              { 2 , 3 } ,
+                              { 4 , 5 } ,
+                              { 10 , 9 } ,
+                              { 12 , 11 } ,
+                              { 14 , 13 }
+                           };
+
+
+
+  // set up the chip
+
+  // switch to busport
+  i2cbusmaster.enable_bus(2);
+
+  // vcc
+  i2czifsocklibobj.pin_to_bus( dut_vcc , BUSPORT_MVC_VCC );
+  i2czifsocklibobj.enable_pin( dut_vcc );
+
+  // gnd
+  i2czifsocklibobj.pin_to_bus( dut_gnd , BUSPORT_MVC_LEDTOGND_1 );
+  i2czifsocklibobj.enable_pin( dut_gnd );
+
+  // set pins to input high so output low
+  for ( uint8_t loopcounter = 0 ; loopcounter < 6 ; loopcounter++ ) {
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][0] , BUSPORT_VCC );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][0] );
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][1] , BUSPORT_GND );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][1] );
+  }
+
+
+
+
+
+  for ( uint8_t loopcounter = 0 ; loopcounter < 6 ; loopcounter++ ) {
+    Serial.print( "Gate " );
+    Serial.print( loopcounter );
+    Serial.print( " test: " );
+    uint8_t result = command_test_gate_1to1( dut_gate[loopcounter][0] , dut_gate[loopcounter][1] );
+    showbin( result );
+    Serial.print( " : " );
+    Serial.print( result == 0b00000001 ? "Pass." : "Fail!" );
+    Serial.println();
+  }
+
+
+
+  // set up the chip
+
+  // switch to busport
+  i2cbusmaster.enable_bus(2);
+
+  // vcc
+  i2czifsocklibobj.pin_to_bus( dut_vcc , BUSPORT_MVC_VCC );
+  i2czifsocklibobj.enable_pin( dut_vcc );
+
+  // gnd
+  i2czifsocklibobj.pin_to_bus( dut_gnd , BUSPORT_MVC_LEDTOGND_1 );
+  i2czifsocklibobj.enable_pin( dut_gnd );
+
+  // set pins to input high so output low
+  for ( uint8_t loopcounter = 0 ; loopcounter < 6 ; loopcounter++ ) {
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][0] , BUSPORT_VCC );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][0] );
+    i2czifsocklibobj.pin_to_bus( dut_gate[loopcounter][1] , BUSPORT_GND );
+    i2czifsocklibobj.enable_pin( dut_gate[loopcounter][1] );
+  }
+
+
+  // turn on gate 0
+  i2czifsocklibobj.pin_to_bus( dut_gate[0][0] , BUSPORT_GND );
+  i2czifsocklibobj.pin_to_bus( dut_gate[0][1] , BUSPORT_MVC_LEDTOGND_0 );
+  
+  // print VCC reference
+  i2cbusport.switchto( BUSPORT_MVC_VCC );
+  Serial.print( "VCC: " );
+  Serial.println( i2cbusport.busobj_B_mvc_vcc.getbusvoltage() );
+  
+  // print gate output
+  i2cbusport.switchto( BUSPORT_MVC_LEDTOGND_0 );
+  Serial.print( "Gate: " );
+  Serial.println( i2cbusport.busobj_2_mvc_ledtognd_0.getbusvoltage() );
+
+
+
+  util_disconnect();
+
+}
