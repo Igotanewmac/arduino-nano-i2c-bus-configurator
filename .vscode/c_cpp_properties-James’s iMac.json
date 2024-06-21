@@ -1,0 +1,80 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/include",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/src",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/zifsocklib",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/pcf8575",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/pcf8574",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/tca9548",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/i2ctools",
+                "/Users/james/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/basetools",
+                "/Users/james/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/Users/james/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/mcp4725",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit BusIO",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit GFX Library",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit INA219",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit NeoPixel",
+                "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit SSD1306",
+                "/Users/james/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/Users/james/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "/Users/james/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/Users/james/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/include",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/src",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/zifsocklib",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/pcf8575",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/pcf8574",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/tca9548",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/i2ctools",
+                    "/Users/james/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/basetools",
+                    "/Users/james/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/Users/james/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/lib/mcp4725",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit BusIO",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit GFX Library",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit INA219",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit NeoPixel",
+                    "/Users/james/Library/CloudStorage/OneDrive-Personal/Documents/PlatformIO/Projects/arduino-nano-i2c-bus-configurator/.pio/libdeps/nanoatmega328/Adafruit SSD1306",
+                    "/Users/james/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/Users/james/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "/Users/james/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/Users/james/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60115",
+                "ARDUINO_AVR_NANO",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega328P__",
+                ""
+            ],
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++11",
+            "compilerPath": "/Users/james/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega328p",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
