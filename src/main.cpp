@@ -99,6 +99,7 @@ void test_7400();
 void test_7402();
 void test_7404();
 void test_7408();
+void test_7432();
 
 void test_self();
 
@@ -196,6 +197,8 @@ void loop() {
   if ( commandline.startsWith( "test7404" ) ) { test_7404(); }
   
   if ( commandline.startsWith( "test7408" ) ) { test_7408(); }
+  
+  if ( commandline.startsWith( "test7432" ) ) { test_7432(); }
 
 
 }
@@ -1219,9 +1222,9 @@ void test_7408() {
 
 
 
-void test_7408() {
+void test_7432() {
 
-  Serial.println("Testing 7408 Chip!");
+  Serial.println("Testing 7432 Chip!");
 
   uint8_t dut_vcc = 15;
   uint8_t dut_gnd = 6;
@@ -1265,7 +1268,7 @@ void test_7408() {
     uint8_t result = command_test_gate_2to1( dut_gate[loopcounter][0] , dut_gate[loopcounter][1] , dut_gate[loopcounter][2] );
     showbin( result );
     Serial.print( " : " );
-    Serial.print( result == 0b00001000 ? "Pass." : "Fail!" );
+    Serial.print( result == 0b00001110 ? "Pass." : "Fail!" );
     Serial.println();
   }
 
