@@ -1445,7 +1445,7 @@ void test_7486() {
   i2czifsocklibobj.pin_to_bus( dut_gate[0][2] , BUSPORT_MVC_LEDTOGND_0 );
   
   delay(10);
-  
+
   // print gate output
   i2cbusport.switchto( BUSPORT_MVC_LEDTOGND_0 );
   Serial.print( "Gate Low: " );
@@ -1455,6 +1455,17 @@ void test_7486() {
   util_disconnect();
 
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
