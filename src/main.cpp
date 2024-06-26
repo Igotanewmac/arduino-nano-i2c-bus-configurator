@@ -797,9 +797,10 @@ void test_self() {
 }
 
 
-
-
+// quad 2 input nand
 void test_7400() {
+
+
 
   Serial.println("Testing 7400 Chip!");
 
@@ -903,7 +904,7 @@ void test_7400() {
 
 
 
-
+// quad 2 input nor
 void test_7402() {
 
   Serial.println("Testing 7402 Chip!");
@@ -1001,6 +1002,8 @@ void test_7402() {
 }
 
 
+
+// 6 inverter
 
 void test_7404() {
 
@@ -1105,6 +1108,7 @@ void test_7404() {
 
 
 
+// quad 2 input and
 
 void test_7408() {
 
@@ -1225,7 +1229,7 @@ void test_7408() {
 
 
 
-
+// quad 2 input or
 
 void test_7432() {
 
@@ -1343,6 +1347,7 @@ void test_7432() {
 
 
 
+// quad 2 input xor
 
 void test_7486() {
 
