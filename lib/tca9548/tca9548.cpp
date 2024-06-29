@@ -14,6 +14,16 @@ tca9548::tca9548( uint8_t i2caddress ) {
 
 }
 
+tca9548::tca9548(  ) {
+}
+
+
+void tca9548::seti2caddress( uint8_t i2caddress ) {
+    _i2c_address = i2caddress;
+}
+
+
+
 tca9548::~tca9548() {
 
     // don't do anything as this object is expected
@@ -23,6 +33,16 @@ tca9548::~tca9548() {
 
 void tca9548::begin() {
 
+    // turn on i2c
+    Wire.begin();
+
+}
+
+
+void tca9548::begin( uint8_t i2caddress ) {
+
+    _i2c_address = i2caddress;
+    
     // turn on i2c
     Wire.begin();
 

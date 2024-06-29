@@ -14,12 +14,21 @@ class tca9548
         /// @brief The object constructor
         /// @param i2caddress The i2c address of the tca9548
         tca9548( uint8_t i2caddress );
+        tca9548( );
 
         /// @brief The object deconstructor
         ~tca9548();
 
+        /// @brief Set the devices i2c address.
+        /// @param i2caddress The i2c address of the device.
+        void seti2caddress( uint8_t i2caddress );
+
         /// @brief Set up and initialise the TCA9548
         void begin();
+
+        /// @brief Set up and initialise the TCA9548
+        /// @param i2caddress The i2caddress of the device
+        void begin( uint8_t i2caddress );
 
         /// @brief Get the current bus state register.
         /// @return The eight bits of bus state.
