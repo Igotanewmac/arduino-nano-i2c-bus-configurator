@@ -33,9 +33,6 @@
 #define SYSTEMBUS_BUSID_SENSORBUS_0 2
 #define SYSTEMBUS_BUSID_SENSORBUS_1 3
 
-#define I2C_ADDRESS_TCA9548 0x70
-
-
 class systembus {
 
     private:
@@ -48,23 +45,25 @@ class systembus {
         pcf8574 mypcf8574obj;
         
 
-        uint8_t _i2caddress_tca9548 = I2C_ADDRESS_TCA9548;
-
-
+        
     public:
-        systembus(/* args */);
+        
+        uint8_t timearray[6] = { 0 };
+
+        systembus();
         ~systembus();
         
         /// @brief Initialise all the things.
-        void begin();
-
-        // address setters
-        void seti2caddress_tca9548( uint8_t i2caddress = I2C_ADDRESS_TCA9548 );
+        void begin( uint8_t* addresses );
 
         /// @brief Switch to the given i2c bus
         void switchbus( uint8_t busid );
 
-        void seti2caddress_pcf8574( uint8_t i2caddress );
+        /// @brief 
+        /// @param lednum 
+        /// @param state 
+        void setled( uint8_t statebyte );
+
 
 };
 

@@ -15,26 +15,14 @@ systembus::~systembus() {
 }
 
 
-void systembus::seti2caddress_tca9548( uint8_t i2caddress ) {
-    _i2caddress_tca9548 = i2caddress;
-}
-
-
-
-
-void systembus::begin() {
+void systembus::begin( uint8_t* addresses ) {
 
     // turn on wire lib
     Wire.begin();
 
-    // initialise the TCA
-    mytca9548obj.seti2caddress( _i2caddress_tca9548 );
+    mytca9548obj.begin( addresses[0] );
 
-    // begin for it
-    mytca9548obj.begin();
-
-    // switch to systembus at startup
-    mytca9548obj.enable_bus( SYSTEMBUS_BUSID_SYSTEMBUS );
+    mypcf8574obj.begin( addresses[1] );
 
 }
 
@@ -47,6 +35,16 @@ void systembus::switchbus( uint8_t busid ) {
     // Switch to the given i2c bus
     mytca9548obj.enable_bus( busid );
 }
+
+
+void systembus::setled( uint8_t statebyte ) {
+    switchbus( SYSTEMBUS_BUSID_SYSTEMBUS );
+    mypcf8574obj.setbyte( statebyte );
+}
+
+
+
+
 
 
 #endif
