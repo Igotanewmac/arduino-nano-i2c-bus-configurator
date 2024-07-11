@@ -126,6 +126,9 @@ void loop() {
   if ( commandline.startsWith( "zifset" ) ) { command_zifset( commandline ); }
   if ( commandline.startsWith( "zifena" ) ) { command_zifena( commandline ); }
   if ( commandline.startsWith( "zifdis" ) ) { command_zifdis( commandline ); }
+  if ( commandline.startsWith( "zifallena" ) ) { myzifbusobj.enableall(); }
+  if ( commandline.startsWith( "zifalldis" ) ) { myzifbusobj.disableall(); }
+  if ( commandline.startsWith( "zifreset" ) ) { myzifbusobj.reset(); }
 
 
 }

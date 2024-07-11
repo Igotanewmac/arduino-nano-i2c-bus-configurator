@@ -44,6 +44,8 @@ class zifbus {
 
         void disableall();
 
+        void reset();
+
 
 };
 

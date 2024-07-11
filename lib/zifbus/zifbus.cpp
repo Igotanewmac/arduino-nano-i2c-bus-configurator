@@ -37,7 +37,12 @@ void zifbus::begin( uint8_t* i2caddresses ) {
 
 
 
-
+void zifbus::reset() {
+    for ( uint8_t loopcounter = 0 ; loopcounter < 16 ; loopcounter++ ) {
+        disable(loopcounter);
+        pin2bus( loopcounter , 0 );
+    }
+}
 
 
 
@@ -49,28 +54,28 @@ void zifbus::pin2bus( uint8_t pinid , uint8_t busid ) {
     uint8_t selectorindex;
     uint8_t byteindex;
 
-    Serial.print( "Setting pin " );
-    Serial.print( pinid );
-    Serial.print( " to bus " );
-    Serial.println( busid );
+    // Serial.print( "Setting pin " );
+    // Serial.print( pinid );
+    // Serial.print( " to bus " );
+    // Serial.println( busid );
 
     switch (pinid) {
-        case 0x0: { selectorindex = 3; byteindex = 3; break; }
-        case 0x1: { selectorindex = 3; byteindex = 2; break; }
-        case 0x2: { selectorindex = 2; byteindex = 3; break; }
-        case 0x3: { selectorindex = 2; byteindex = 2; break; }
-        case 0x4: { selectorindex = 1; byteindex = 3; break; }
-        case 0x5: { selectorindex = 1; byteindex = 2; break; }
-        case 0x6: { selectorindex = 0; byteindex = 3; break; }
-        case 0x7: { selectorindex = 0; byteindex = 2; break; }
-        case 0x8: { selectorindex = 0; byteindex = 0; break; }
-        case 0x9: { selectorindex = 0; byteindex = 1; break; }
-        case 0xA: { selectorindex = 1; byteindex = 0; break; }
-        case 0xB: { selectorindex = 1; byteindex = 1; break; }
-        case 0xC: { selectorindex = 2; byteindex = 0; break; }
-        case 0xD: { selectorindex = 2; byteindex = 1; break; }
-        case 0xE: { selectorindex = 3; byteindex = 0; break; }
-        case 0xF: { selectorindex = 3; byteindex = 1; break; }
+        case 0: { selectorindex = 3; byteindex = 3; break; }
+        case 1: { selectorindex = 3; byteindex = 2; break; }
+        case 2: { selectorindex = 2; byteindex = 3; break; }
+        case 3: { selectorindex = 2; byteindex = 2; break; }
+        case 4: { selectorindex = 1; byteindex = 3; break; }
+        case 5: { selectorindex = 1; byteindex = 2; break; }
+        case 6: { selectorindex = 0; byteindex = 2; break; }
+        case 7: { selectorindex = 0; byteindex = 3; break; }
+        case 8: { selectorindex = 0; byteindex = 1; break; }
+        case 9: { selectorindex = 0; byteindex = 0; break; }
+        case 10: { selectorindex = 1; byteindex = 1; break; }
+        case 11: { selectorindex = 1; byteindex = 0; break; }
+        case 12: { selectorindex = 2; byteindex = 1; break; }
+        case 13: { selectorindex = 2; byteindex = 0; break; }
+        case 14: { selectorindex = 3; byteindex = 1; break; }
+        case 15: { selectorindex = 3; byteindex = 0; break; }
     }
 
     // Serial.print("Selectorindex = " );
@@ -110,22 +115,22 @@ void zifbus::enable( uint8_t pinid ) {
     uint8_t byteindex;
 
     switch (pinid) {
-        case 0x0: { selectorindex = 1; byteindex = 7; break; }
-        case 0x1: { selectorindex = 1; byteindex = 6; break; }
-        case 0x2: { selectorindex = 1; byteindex = 5; break; }
-        case 0x3: { selectorindex = 1; byteindex = 4; break; }
-        case 0x4: { selectorindex = 1; byteindex = 3; break; }
-        case 0x5: { selectorindex = 1; byteindex = 2; break; }
-        case 0x6: { selectorindex = 1; byteindex = 1; break; }
-        case 0x7: { selectorindex = 1; byteindex = 0; break; }
-        case 0x8: { selectorindex = 0; byteindex = 0; break; }
-        case 0x9: { selectorindex = 0; byteindex = 1; break; }
-        case 0xA: { selectorindex = 0; byteindex = 2; break; }
-        case 0xB: { selectorindex = 0; byteindex = 3; break; }
-        case 0xC: { selectorindex = 0; byteindex = 4; break; }
-        case 0xD: { selectorindex = 0; byteindex = 5; break; }
-        case 0xE: { selectorindex = 0; byteindex = 6; break; }
-        case 0xF: { selectorindex = 0; byteindex = 7; break; }
+        case 0x0: { selectorindex = 1; byteindex = 0; break; }
+        case 0x1: { selectorindex = 1; byteindex = 1; break; }
+        case 0x2: { selectorindex = 1; byteindex = 2; break; }
+        case 0x3: { selectorindex = 1; byteindex = 3; break; }
+        case 0x4: { selectorindex = 1; byteindex = 4; break; }
+        case 0x5: { selectorindex = 1; byteindex = 5; break; }
+        case 0x6: { selectorindex = 1; byteindex = 7; break; }
+        case 0x7: { selectorindex = 1; byteindex = 6; break; }
+        case 0x8: { selectorindex = 0; byteindex = 7; break; }
+        case 0x9: { selectorindex = 0; byteindex = 6; break; }
+        case 0xA: { selectorindex = 0; byteindex = 5; break; }
+        case 0xB: { selectorindex = 0; byteindex = 4; break; }
+        case 0xC: { selectorindex = 0; byteindex = 3; break; }
+        case 0xD: { selectorindex = 0; byteindex = 2; break; }
+        case 0xE: { selectorindex = 0; byteindex = 1; break; }
+        case 0xF: { selectorindex = 0; byteindex = 0; break; }
     }
     
     // Serial.print("Selectorindex = " );
@@ -173,22 +178,22 @@ void zifbus::disable( uint8_t pinid ) {
     uint8_t byteindex;
 
     switch (pinid) {
-        case 0x0: { selectorindex = 1; byteindex = 7; break; }
-        case 0x1: { selectorindex = 1; byteindex = 6; break; }
-        case 0x2: { selectorindex = 1; byteindex = 5; break; }
-        case 0x3: { selectorindex = 1; byteindex = 4; break; }
-        case 0x4: { selectorindex = 1; byteindex = 3; break; }
-        case 0x5: { selectorindex = 1; byteindex = 2; break; }
-        case 0x6: { selectorindex = 1; byteindex = 1; break; }
-        case 0x7: { selectorindex = 1; byteindex = 0; break; }
-        case 0x8: { selectorindex = 0; byteindex = 0; break; }
-        case 0x9: { selectorindex = 0; byteindex = 1; break; }
-        case 0xA: { selectorindex = 0; byteindex = 2; break; }
-        case 0xB: { selectorindex = 0; byteindex = 3; break; }
-        case 0xC: { selectorindex = 0; byteindex = 4; break; }
-        case 0xD: { selectorindex = 0; byteindex = 5; break; }
-        case 0xE: { selectorindex = 0; byteindex = 6; break; }
-        case 0xF: { selectorindex = 0; byteindex = 7; break; }
+        case 0x0: { selectorindex = 1; byteindex = 0; break; }
+        case 0x1: { selectorindex = 1; byteindex = 1; break; }
+        case 0x2: { selectorindex = 1; byteindex = 2; break; }
+        case 0x3: { selectorindex = 1; byteindex = 3; break; }
+        case 0x4: { selectorindex = 1; byteindex = 4; break; }
+        case 0x5: { selectorindex = 1; byteindex = 5; break; }
+        case 0x6: { selectorindex = 1; byteindex = 7; break; }
+        case 0x7: { selectorindex = 1; byteindex = 6; break; }
+        case 0x8: { selectorindex = 0; byteindex = 7; break; }
+        case 0x9: { selectorindex = 0; byteindex = 6; break; }
+        case 0xA: { selectorindex = 0; byteindex = 5; break; }
+        case 0xB: { selectorindex = 0; byteindex = 4; break; }
+        case 0xC: { selectorindex = 0; byteindex = 3; break; }
+        case 0xD: { selectorindex = 0; byteindex = 2; break; }
+        case 0xE: { selectorindex = 0; byteindex = 1; break; }
+        case 0xF: { selectorindex = 0; byteindex = 0; break; }
     }
     
     // Serial.print("Selectorindex = " );
