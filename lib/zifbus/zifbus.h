@@ -17,6 +17,10 @@ extern systembus mysystembusobj;
 
 
 
+
+
+
+
 class zifbus {
         
     private:

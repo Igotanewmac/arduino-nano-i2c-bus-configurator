@@ -91,7 +91,7 @@ void command_zifena( String & commandline );
 void command_zifdis( String & commandline );
 
 
-
+void command_selftest_a();
 
 
 
@@ -129,6 +129,9 @@ void loop() {
   if ( commandline.startsWith( "zifallena" ) ) { myzifbusobj.enableall(); }
   if ( commandline.startsWith( "zifalldis" ) ) { myzifbusobj.disableall(); }
   if ( commandline.startsWith( "zifreset" ) ) { myzifbusobj.reset(); }
+
+
+  if ( commandline.startsWith( "selftesta" ) ) { command_selftest_a(); }
 
 
 }
@@ -256,6 +259,47 @@ void command_zifdis( String & commandline ) {
   myzifbusobj.disable( zifpinid );
 
 };
+
+
+
+
+
+
+
+
+
+
+
+void command_selftest_a() {
+
+
+  // for each pin pair
+  for (uint8_t loopcounter = 0; loopcounter < 8; loopcounter++) {
+    
+    Serial.print("Test: ");
+    Serial.println( loopcounter );
+
+    // set input pin
+    myzifbusobj.pin2bus( loopcounter , 6 );
+    myzifbusobj.enable( loopcounter );
+
+    // set output pin
+    myzifbusobj.pin2bus( 15 - loopcounter , 15 );
+    myzifbusobj.enable( 15 - loopcounter );
+
+    delay(150);
+
+    // reset
+    myzifbusobj.reset();
+
+    delay(100);
+
+  }
+  
+
+
+
+}
 
 
 
