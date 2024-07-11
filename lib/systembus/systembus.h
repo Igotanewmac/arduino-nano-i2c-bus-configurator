@@ -48,13 +48,12 @@ class systembus {
         
     public:
         
-        uint8_t timearray[6] = { 0 };
-
+        
         systembus();
         ~systembus();
         
         /// @brief Initialise all the things.
-        void begin( uint8_t* addresses );
+        void begin( uint8_t* i2caddresses );
 
         /// @brief Switch to the given i2c bus
         void switchbus( uint8_t busid );

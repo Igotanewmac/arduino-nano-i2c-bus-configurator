@@ -15,14 +15,14 @@ systembus::~systembus() {
 }
 
 
-void systembus::begin( uint8_t* addresses ) {
+void systembus::begin( uint8_t* i2caddresses ) {
 
     // turn on wire lib
     Wire.begin();
 
-    mytca9548obj.begin( addresses[0] );
+    mytca9548obj.begin( i2caddresses[0] );
 
-    mypcf8574obj.begin( addresses[1] );
+    mypcf8574obj.begin( i2caddresses[1] );
 
 }
 
