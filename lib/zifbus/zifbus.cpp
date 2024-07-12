@@ -38,6 +38,7 @@ void zifbus::begin( uint8_t* i2caddresses ) {
 
 
 void zifbus::reset() {
+    mysystembusobj.switchbus(SYSTEMBUS_BUSID_ZIFBUS);
     for ( uint8_t loopcounter = 0 ; loopcounter < 16 ; loopcounter++ ) {
         disable(loopcounter);
         pin2bus( loopcounter , 0 );

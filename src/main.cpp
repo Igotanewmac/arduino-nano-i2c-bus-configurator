@@ -16,7 +16,8 @@ zifbus myzifbusobj;
 
 
 
-
+#include <sensorbus.h>
+sensorbus mysensorbusobj;
 
 
 
@@ -24,7 +25,7 @@ zifbus myzifbusobj;
 
 void setup() {
 
-  uint8_t i2caddressarray[6] = {0};
+  uint8_t i2caddressarray[8] = {0};
 
   // initialise systembus first, to default system bus
   
@@ -49,6 +50,20 @@ void setup() {
   myzifbusobj.begin( i2caddressarray );
 
   myzifbusobj.disableall();
+
+  i2caddressarray[0] = 0x40;
+  i2caddressarray[1] = 0x41;
+  i2caddressarray[2] = 0x44;
+  i2caddressarray[3] = 0x45;
+  i2caddressarray[4] = 0x44;
+  i2caddressarray[5] = 0x45;
+  
+  i2caddressarray[6] = 0x60;
+  i2caddressarray[7] = 0x61;
+  
+  mysensorbusobj.begin( i2caddressarray );
+
+
 
 }
 
@@ -89,9 +104,16 @@ void command_i2cbus( String & commandline );
 void command_zifset( String & commandline );
 void command_zifena( String & commandline );
 void command_zifdis( String & commandline );
+void command_zifallena();
+void command_zifalldis();
+void command_zifreset();
+
 
 
 void command_selftest_a();
+
+
+
 
 
 
@@ -126,9 +148,9 @@ void loop() {
   if ( commandline.startsWith( "zifset" ) ) { command_zifset( commandline ); }
   if ( commandline.startsWith( "zifena" ) ) { command_zifena( commandline ); }
   if ( commandline.startsWith( "zifdis" ) ) { command_zifdis( commandline ); }
-  if ( commandline.startsWith( "zifallena" ) ) { myzifbusobj.enableall(); }
-  if ( commandline.startsWith( "zifalldis" ) ) { myzifbusobj.disableall(); }
-  if ( commandline.startsWith( "zifreset" ) ) { myzifbusobj.reset(); }
+  if ( commandline.startsWith( "zifallena" ) ) { command_zifallena(); }
+  if ( commandline.startsWith( "zifalldis" ) ) { command_zifalldis(); }
+  if ( commandline.startsWith( "zifreset" ) ) { command_zifreset(); }
 
 
   if ( commandline.startsWith( "selftesta" ) ) { command_selftest_a(); }
@@ -263,8 +285,23 @@ void command_zifdis( String & commandline ) {
 
 
 
+void command_zifallena() {
+  Serial.println("All zif pins enabled.");
+  myzifbusobj.enableall();
+}
 
 
+void command_zifalldis() {
+  Serial.print("All zif pins disabled.");
+  myzifbusobj.disableall();
+}
+
+
+
+void command_zifreset() {
+  Serial.println("Resetting zif bus.");
+  myzifbusobj.reset();
+}
 
 
 
@@ -277,22 +314,29 @@ void command_selftest_a() {
   for (uint8_t loopcounter = 0; loopcounter < 8; loopcounter++) {
     
     Serial.print("Test: ");
-    Serial.println( loopcounter );
+    Serial.print( loopcounter );
+    Serial.print("\t");
 
     // set input pin
-    myzifbusobj.pin2bus( loopcounter , 6 );
+    myzifbusobj.pin2bus( loopcounter , ZIFBUS_MVCC_0 );
     myzifbusobj.enable( loopcounter );
 
     // set output pin
-    myzifbusobj.pin2bus( 15 - loopcounter , 15 );
+    myzifbusobj.pin2bus( 15 - loopcounter , ZIFBUS_LEDTOGND_0 );
     myzifbusobj.enable( 15 - loopcounter );
 
-    delay(150);
+
+    delay(10);
+
+    
+    mysensorbusobj.switchto(MVCC_0);
+    Serial.print( mysensorbusobj.ourina219obj[MVCC_0].getbusvoltage() );
+    Serial.print("\t");
+    mysensorbusobj.switchto(LEDTOGND_0);
+    Serial.println( mysensorbusobj.ourina219obj[LEDTOGND_0].getbusvoltage() );
 
     // reset
     myzifbusobj.reset();
-
-    delay(100);
 
   }
   
