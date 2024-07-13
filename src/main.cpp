@@ -158,6 +158,22 @@ void command_test_vsweepd_parser( String & commandline );
 
 
 
+void command_test_measure_parser( String & commandline );
+
+void command_test_measure( uint8_t sensorid );
+
+
+void command_test_dacset_parser( String & commandline );
+
+void command_test_dacset( uint8_t sensorid , uint16_t sensorvalue );
+
+
+
+
+
+
+
+
 void loop() {
 
   // show prompt if needed
@@ -201,6 +217,12 @@ void loop() {
 
   if ( commandline.startsWith( "gate1to1" ) ) { command_test_gate1to1_parser( commandline ); }
   if ( commandline.startsWith( "gate2to1" ) ) { command_test_gate2to1_parser( commandline ); }
+  
+  
+  
+  if ( commandline.startsWith( "measure" ) ) { command_test_measure_parser( commandline ); }
+  
+  if ( commandline.startsWith( "setdac" ) ) { command_test_dacset_parser( commandline ); }
 
 }
 
@@ -816,5 +838,98 @@ void command_test_vsweepd( uint8_t inputpin , uint8_t outputpin , uint16_t steps
   myzifbusobj.reset();
 
 }
+
+
+
+
+
+
+
+void command_test_measure_parser( String & commandline ) {
+
+  // remove command
+  commandline = commandline.substring( 8 );
+  commandline += " ";
+
+  // get the input pin
+  uint8_t sensorid = commandline.toInt();
+  commandline = commandline.substring( commandline.indexOf(" ") + 1 );
+
+  command_test_measure( sensorid );
+}
+
+
+void command_test_measure( uint8_t sensorid ) {
+
+  Serial.print( "Measure: ");
+  Serial.print( sensorid ); dotab();
+
+  mysensorbusobj.switchto(sensorid);
+  Serial.print( mysensorbusobj.ourina219obj[sensorid].getbusvoltage() ); dotab();
+  Serial.print( mysensorbusobj.ourina219obj[sensorid].getshuntvoltage() ); dotab();
+  Serial.print( mysensorbusobj.ourina219obj[sensorid].getcurrent() ); dotab();
+  Serial.print( mysensorbusobj.ourina219obj[sensorid].getpower() );
+  Serial.println();
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+void command_test_dacset_parser( String & commandline ) {
+
+  // remove command
+  commandline = commandline.substring( 7 );
+  commandline += " ";
+
+  // get the dac index
+  uint8_t sensorid = commandline.toInt();
+  commandline = commandline.substring( commandline.indexOf(" ") + 1 );
+
+  // get the value
+  uint16_t sensorvalue = commandline.toInt();
+  commandline = commandline.substring( commandline.indexOf(" ") + 1 );
+
+  Serial.print("Setting DAC ");
+  Serial.print( sensorid );
+  Serial.print(" to ");
+  Serial.print( sensorvalue );
+  Serial.println();
+
+  command_test_dacset( sensorid , sensorvalue );
+
+}
+
+void command_test_dacset( uint8_t sensorid , uint16_t sensorvalue ) {
+
+  mysensorbusobj.switchto(VMVCC_0);
+  mysensorbusobj.ourmcp4725obj[sensorid].setvalue( sensorvalue );
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -13,12 +13,12 @@
 extern systembus mysystembusobj;
 
 
-#define ZIFBUS_LEDTOGND_0 10
-#define ZIFBUS_LEDTOGND_1 11
-#define ZIFBUS_MVCC_0 8
-#define ZIFBUS_MVCC_1 9
-#define ZIFBUS_VMVCC_0 13
-#define ZIFBUS_VMVCC_1 12
+#define ZIFBUS_LEDTOGND_0 13
+#define ZIFBUS_LEDTOGND_1 12
+#define ZIFBUS_MVCC_0 9
+#define ZIFBUS_MVCC_1 8
+#define ZIFBUS_VMVCC_0 11
+#define ZIFBUS_VMVCC_1 10
 
 
 #define LEDTOGND_0 0
