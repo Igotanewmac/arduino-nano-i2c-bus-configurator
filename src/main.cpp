@@ -22,82 +22,8 @@ sensorbus mysensorbusobj;
 
 
 
-
-void setup() {
-
-  uint8_t i2caddressarray[8] = {0};
-
-  // initialise systembus first, to default system bus
-  
-  i2caddressarray[0] = 0x70;
-  i2caddressarray[1] = 0x20;
-
-
-  mysystembusobj.begin( i2caddressarray );
-  
-  myi2ctoolsobj.begin( 115200 );
-
-  mysystembusobj.setled( 0 );
-  
-  
-  i2caddressarray[0] = 0x21;
-  i2caddressarray[1] = 0x22;
-  i2caddressarray[2] = 0x23;
-  i2caddressarray[3] = 0x24;
-  i2caddressarray[4] = 0x26;
-  i2caddressarray[5] = 0x27;
-
-  myzifbusobj.begin( i2caddressarray );
-
-  myzifbusobj.disableall();
-
-  i2caddressarray[0] = 0x40;
-  i2caddressarray[1] = 0x41;
-  i2caddressarray[2] = 0x44;
-  i2caddressarray[3] = 0x45;
-  i2caddressarray[4] = 0x44;
-  i2caddressarray[5] = 0x45;
-  
-  i2caddressarray[6] = 0x60;
-  i2caddressarray[7] = 0x61;
-  
-  mysensorbusobj.begin( i2caddressarray );
-
-
-
-}
-
-
-
-
-/// @brief Halt, but do NOT catch fire!
-void halt() {
-  Serial.println("halted!");
-  while(1);
-}
-
-
-
-/// @brief a utility function to make sure we only show the prompt once.
-uint8_t serialpromptstate = 0;
-void doprompt( uint8_t requestedstate ) {
-  if ( requestedstate ) {
-    if ( !serialpromptstate ) {
-      serialpromptstate = 1;
-      Serial.print( "Ready: " );
-    }
-  }
-  else {
-    serialpromptstate = 0;
-  }
-}
-
-
-/// @brief Do a tab.
-void dotab() {
-  Serial.print("\t");
-}
-
+#include <at24c.h>
+at24c mychipstore;
 
 
 
@@ -169,6 +95,93 @@ void command_test_dacset( uint8_t sensorid , uint16_t sensorvalue );
 
 
 
+void storeprogram();
+
+void showprogram( String & commandline );
+
+void runprogram( String & commandline );
+
+
+
+
+void setup() {
+
+  uint8_t i2caddressarray[8] = {0};
+
+  // initialise systembus first, to default system bus
+  
+  i2caddressarray[0] = 0x70;
+  i2caddressarray[1] = 0x20;
+
+
+  mysystembusobj.begin( i2caddressarray );
+  
+  myi2ctoolsobj.begin( 115200 );
+
+  mysystembusobj.setled( 0 );
+  
+  
+  i2caddressarray[0] = 0x21;
+  i2caddressarray[1] = 0x22;
+  i2caddressarray[2] = 0x23;
+  i2caddressarray[3] = 0x24;
+  i2caddressarray[4] = 0x26;
+  i2caddressarray[5] = 0x27;
+
+  myzifbusobj.begin( i2caddressarray );
+
+  myzifbusobj.disableall();
+
+  i2caddressarray[0] = 0x40;
+  i2caddressarray[1] = 0x41;
+  i2caddressarray[2] = 0x44;
+  i2caddressarray[3] = 0x45;
+  i2caddressarray[4] = 0x44;
+  i2caddressarray[5] = 0x45;
+  
+  i2caddressarray[6] = 0x60;
+  i2caddressarray[7] = 0x61;
+  
+  mysensorbusobj.begin( i2caddressarray );
+
+
+  mychipstore.begin( 0x50 );
+
+  storeprogram();
+
+}
+
+
+
+
+/// @brief Halt, but do NOT catch fire!
+void halt() {
+  Serial.println("halted!");
+  while(1);
+}
+
+
+
+/// @brief a utility function to make sure we only show the prompt once.
+uint8_t serialpromptstate = 0;
+void doprompt( uint8_t requestedstate ) {
+  if ( requestedstate ) {
+    if ( !serialpromptstate ) {
+      serialpromptstate = 1;
+      Serial.print( "Ready: " );
+    }
+  }
+  else {
+    serialpromptstate = 0;
+  }
+}
+
+
+/// @brief Do a tab.
+void dotab() {
+  Serial.print("\t");
+}
+
 
 
 
@@ -223,6 +236,12 @@ void loop() {
   if ( commandline.startsWith( "measure" ) ) { command_test_measure_parser( commandline ); }
   
   if ( commandline.startsWith( "setdac" ) ) { command_test_dacset_parser( commandline ); }
+
+
+  if ( commandline.startsWith( "storeprogram" ) ) { storeprogram(); }
+  if ( commandline.startsWith( "showprogram" ) ) { showprogram( commandline ); }
+  if ( commandline.startsWith( "runprogram" ) ) { runprogram( commandline ); }
+  
 
 }
 
@@ -402,7 +421,7 @@ void command_selftest_a() {
     myzifbusobj.enable( loopcounter );
 
     // set output pin
-    myzifbusobj.pin2bus( 15 - loopcounter , ZIFBUS_LEDTOGND_0 );
+    myzifbusobj.pin2bus( 15 - loopcounter , ZIFBUS_MLEDTOGND_0 );
     myzifbusobj.enable( 15 - loopcounter );
 
 
@@ -433,7 +452,7 @@ void command_selftest_b() {
       myzifbusobj.pin2bus( loopcounter , ZIFBUS_MVCC_0 );
       myzifbusobj.enable( loopcounter );
 
-      myzifbusobj.pin2bus( loopcounter + 1 , ZIFBUS_LEDTOGND_0 );
+      myzifbusobj.pin2bus( loopcounter + 1 , ZIFBUS_MLEDTOGND_0 );
       myzifbusobj.enable( loopcounter + 1 );
 
       Serial.print( loopcounter ); dotab();
@@ -498,7 +517,7 @@ uint8_t command_test_gate1to1(  uint8_t inputpin , uint8_t outputpin ) {
   myzifbusobj.pin2bus( inputpin , ZIFBUS_VMVCC_0 );
   myzifbusobj.enable( inputpin );
 
-  myzifbusobj.pin2bus( outputpin , ZIFBUS_LEDTOGND_0 );
+  myzifbusobj.pin2bus( outputpin , ZIFBUS_MLEDTOGND_0 );
   myzifbusobj.enable( outputpin );
 
   // first test
@@ -584,7 +603,7 @@ uint8_t command_test_gate2to1(  uint8_t inputpina , uint8_t inputpinb , uint8_t 
   myzifbusobj.pin2bus( inputpinb , ZIFBUS_VMVCC_1 );
   myzifbusobj.enable( inputpinb );
 
-  myzifbusobj.pin2bus( outputpin , ZIFBUS_LEDTOGND_0 );
+  myzifbusobj.pin2bus( outputpin , ZIFBUS_MLEDTOGND_0 );
   myzifbusobj.enable( outputpin );
 
   uint8_t result = 0;
@@ -672,7 +691,7 @@ void command_test_vsweepu( uint8_t inputpin , uint8_t outputpin , uint16_t steps
   myzifbusobj.pin2bus( inputpin , ZIFBUS_VMVCC_0 );
   myzifbusobj.enable( inputpin );
 
-  myzifbusobj.pin2bus( outputpin , ZIFBUS_LEDTOGND_0 );
+  myzifbusobj.pin2bus( outputpin , ZIFBUS_MLEDTOGND_0 );
   myzifbusobj.enable( outputpin );
 
   for ( uint16_t loopcounter = 0 ; loopcounter < 4096 ; loopcounter += stepsize ) {
@@ -771,7 +790,7 @@ void command_test_vsweepd( uint8_t inputpin , uint8_t outputpin , uint16_t steps
   myzifbusobj.pin2bus( inputpin , ZIFBUS_VMVCC_0 );
   myzifbusobj.enable( inputpin );
 
-  myzifbusobj.pin2bus( outputpin , ZIFBUS_LEDTOGND_0 );
+  myzifbusobj.pin2bus( outputpin , ZIFBUS_MLEDTOGND_0 );
   myzifbusobj.enable( outputpin );
 
   Serial.print(4096); dotab();
@@ -929,7 +948,384 @@ void command_test_dacset( uint8_t sensorid , uint16_t sensorvalue ) {
 
 
 
+void storeprogram() {
+
+  Serial.println( "Storing Program" );
+
+  mysystembusobj.switchbus(SYSTEMBUS_BUSID_SYSTEMBUS);
+
+  uint16_t progptr = 0;
+
+
+  Serial.print("Selftest: A");
+  Serial.println( progptr );
+
+  mychipstore.zifreset( progptr );
+  for ( uint8_t loopcounter = 0 ; loopcounter < 8 ; loopcounter++ ) {
+  mychipstore.zifset( progptr , loopcounter , 11 );
+  mychipstore.zifena( progptr , loopcounter );
+  mychipstore.zifset( progptr , 15 - loopcounter , 9 );
+  mychipstore.zifena( progptr , 15 - loopcounter );
+  mychipstore.delay( progptr , 1 );
+  mychipstore.measure( progptr , 2 );
+  mychipstore.measure( progptr , 0 );
+  mychipstore.zifreset( progptr );
+  }
+  mychipstore.endprogram( progptr );
+
+  Serial.print("Selftest B: ");
+  Serial.println( progptr );
+
+  mychipstore.zifreset( progptr );
+  for ( uint8_t loopcounter = 0 ; loopcounter < 16 ; loopcounter += 2 ) {
+  mychipstore.zifset( progptr , loopcounter , 11 );
+  mychipstore.zifena( progptr , loopcounter );
+  mychipstore.zifset( progptr , loopcounter + 1 , 9 );
+  mychipstore.zifena( progptr , loopcounter + 1 );
+  mychipstore.delay( progptr , 1 );
+  mychipstore.measure( progptr , 2 );
+  mychipstore.measure( progptr , 0 );
+  mychipstore.zifreset( progptr );
+  }
+  mychipstore.endprogram( progptr );
 
 
 
+
+  // 7400
+
+  Serial.print( "7400 reset : " );
+  Serial.println( progptr );
+
+  /*
+    7400 quad NAND
+           ----
+    1A  0 -|  |-  15  VCC
+    1B  1 -|  |-  14  4B
+    1Y  2 -|  |-  13  4A
+    2A  3 -|  |-  12  4Y
+    2B  4 -|  |-  11  3B
+    2Y  5 -|  |-  10  3A
+    GND 6 -|  |-  9   3Y
+           ----
+
+  */
+
+  // set gates to off
+  mychipstore.zifreset( progptr );
+
+  // gate config
+  #define P1A 0
+  #define P1B 1
+  #define P1Y 2
+  #define P2A 3
+  #define P2B 4
+  #define P2Y 5
+  #define P3A 10
+  #define P3B 11
+  #define P3Y 9
+  #define P4A 13
+  #define P4B 14
+  #define P4Y 12
+  #define PVCC 15
+  #define PGND 6
+
+  // mychipstore.zifset( progptr , P1A , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P1B , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P1Y , ZIFBUS_GND );
+  // mychipstore.zifset( progptr , P2A , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P2B , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P2Y , ZIFBUS_GND );
+  // mychipstore.zifset( progptr , P3A , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P3B , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P3Y , ZIFBUS_GND );
+  // mychipstore.zifset( progptr , P4A , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P4B , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P4Y , ZIFBUS_GND );
+  
+  // mychipstore.zifset( progptr , PVCC , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , PGND , ZIFBUS_GND );
+
+  // mychipstore.zifallena( progptr );
+  // mychipstore.delay( progptr , 5 );
+
+  mychipstore.gate2to1( progptr , P1A , P1B , P1Y );
+  // mychipstore.zifset( progptr , P1A , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P1B , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P1Y , ZIFBUS_GND );
+  
+  mychipstore.gate2to1( progptr , P2A , P2B , P2Y );
+  // mychipstore.zifset( progptr , P2A , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P2B , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P2Y , ZIFBUS_GND );
+  
+  mychipstore.gate2to1( progptr , P3A , P3B , P3Y );
+  // mychipstore.zifset( progptr , P3A , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P3B , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P3Y , ZIFBUS_GND );
+  
+  mychipstore.gate2to1( progptr , P4A , P4B , P4Y );
+  // mychipstore.zifset( progptr , P4A , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P4B , ZIFBUS_VCC );
+  // mychipstore.zifset( progptr , P4Y , ZIFBUS_GND );
+  
+
+
+
+
+  mychipstore.zifreset( progptr );
+
+
+
+
+
+
+
+
+  mychipstore.endprogram( progptr );
+
+}
+
+
+
+void showprogram( String & commandline ) {
+
+  mysystembusobj.switchbus(SYSTEMBUS_BUSID_SYSTEMBUS);
+
+  commandline = commandline.substring( 11 );
+  commandline += " ";
+
+  uint16_t progptr = commandline.toInt();
+
+
+  Serial.println( "Program" );
+
+  uint8_t databyte = 0;
+  while ( databyte != 0xFF ) {
+    databyte = mychipstore.getdata( progptr++ );
+    showhex( databyte );
+  }
+  Serial.println();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void runprogram( String & commandline ) {
+
+  mysystembusobj.switchbus(SYSTEMBUS_BUSID_SYSTEMBUS);
+
+  commandline = commandline.substring( 11 );
+  commandline += " ";
+
+  uint16_t programstartaddress = commandline.toInt();
+
+  Serial.print( "Program " );
+  Serial.println( programstartaddress );
+
+  uint16_t progptr = programstartaddress;
+  uint8_t databyte = 0;
+
+  uint8_t u8bitarg1 = 0;
+  uint8_t u8bitarg2 = 0;
+  uint8_t u8bitarg3 = 0;
+  
+  uint16_t u16bitarg1 = 0;
+  
+
+  while ( databyte != 0xFF ) {
+    mysystembusobj.switchbus(SYSTEMBUS_BUSID_SYSTEMBUS);
+    databyte = mychipstore.getdata( progptr++ );
+    Serial.print( progptr - 1 );;
+    Serial.print(" - ");
+    showhex( databyte );
+    Serial.print(" - ");
+
+    switch (databyte) {
+
+    case 0x00:
+      // no-op
+      break;
+    
+    // zifset
+    case 0x01:
+      u8bitarg1 =  mychipstore.getdata( progptr++ );
+      u8bitarg2 =  mychipstore.getdata( progptr++ );
+      Serial.print( "Zifset " );
+      Serial.print( u8bitarg1 );
+      Serial.print( " to " );
+      Serial.print( u8bitarg2 );
+      Serial.println();
+      myzifbusobj.pin2bus( u8bitarg1 , u8bitarg2 );
+      break;
+    
+
+    // zifena
+    case 0x02:
+      u8bitarg1 = mychipstore.getdata( progptr++ );
+      Serial.print( "Zifena " );
+      Serial.println( u8bitarg1 );
+      myzifbusobj.enable( u8bitarg1 );
+      break;
+
+
+    // zifdis
+    case 0x03:
+      u8bitarg1 = mychipstore.getdata( progptr++ );
+      Serial.print( "Zifdis " );
+      Serial.println( u8bitarg1 );
+      myzifbusobj.disable( u8bitarg1 );
+      break;
+
+    // zifallena
+    case 0x04:
+      Serial.print( "Zifallena " );
+      Serial.println();
+      myzifbusobj.enableall();
+      break;
+    
+    // zifalldis
+    case 0x05:
+      Serial.print( "Zifalldis " );
+      Serial.println();
+      myzifbusobj.disableall();
+      break;
+
+    // zifreset
+    case 0x06:
+        Serial.print( "Zifrst " );
+        Serial.println();
+        myzifbusobj.reset();
+      break;
+
+    // gate1to1
+    case 0x07:
+      u8bitarg1 = mychipstore.getdata( progptr++ );
+      u8bitarg2 = mychipstore.getdata( progptr++ );
+      Serial.print( "Gate1to1 input: ");
+      Serial.print( u8bitarg1 );
+      Serial.print( "  -> output: " );
+      Serial.print( u8bitarg2 );
+      Serial.println();
+      showbin( command_test_gate1to1( u8bitarg1 , u8bitarg2 ) );
+      Serial.println();
+      break;
+
+    // gate2to1
+    case 0x08:
+      u8bitarg1 = mychipstore.getdata( progptr++ );
+      u8bitarg2 = mychipstore.getdata( progptr++ );
+      u8bitarg3 = mychipstore.getdata( progptr++ );
+      Serial.print( "Gate2to1 inputa: ");
+      Serial.print( u8bitarg1 );
+      Serial.print( " inputb: " );
+      Serial.print( u8bitarg2 );
+      Serial.print( " output: " );
+      Serial.print( u8bitarg3 );
+      Serial.println();
+      showbin( command_test_gate2to1( u8bitarg1 , u8bitarg2 , u8bitarg3 ) );
+      Serial.println();
+      break;
+
+    // vsweepu
+    case 0x09:
+      u8bitarg1 = mychipstore.getdata( progptr++ );
+      u8bitarg2 = mychipstore.getdata( progptr++ );
+      u16bitarg1 = mychipstore.getdata( progptr++ ) << 8;
+      u16bitarg1 |= mychipstore.getdata( progptr++ );
+      Serial.print( "vsweepu input: " );
+      Serial.print( u8bitarg1 );
+      Serial.print( " output: " );
+      Serial.print( u8bitarg2 );
+      Serial.print( " stepsize: " );
+      Serial.print( u16bitarg1 );
+      Serial.println();
+      command_test_vsweepu( u8bitarg1 , u8bitarg2 , u16bitarg1 );
+      break;
+    
+    // vsweepd
+    case 0x0A:
+      u8bitarg1 = mychipstore.getdata( progptr++ );
+      u8bitarg2 = mychipstore.getdata( progptr++ );
+      u16bitarg1 = mychipstore.getdata( progptr++ ) << 8;
+      u16bitarg1 |= mychipstore.getdata( progptr++ );
+      Serial.print( "vsweepu input: " );
+      Serial.print( u8bitarg1 );
+      Serial.print( " output: " );
+      Serial.print( u8bitarg2 );
+      Serial.print( " stepsize: " );
+      Serial.print( u16bitarg1 );
+      Serial.println();
+      command_test_vsweepd( u8bitarg1 , u8bitarg2 , u16bitarg1 );
+      break;
+
+    // measure
+    case 0x0B:
+      u8bitarg1 = mychipstore.getdata( progptr++ );
+      Serial.print( "Measure: " );
+      Serial.print( u8bitarg1 ); dotab();
+      mysensorbusobj.switchto( u8bitarg1 );
+      Serial.print( mysensorbusobj.ourina219obj[u8bitarg1].getbusvoltage() ); dotab();
+      Serial.print( mysensorbusobj.ourina219obj[u8bitarg1].getshuntvoltage() ); dotab();
+      Serial.print( mysensorbusobj.ourina219obj[u8bitarg1].getcurrent() ); dotab();
+      Serial.print( mysensorbusobj.ourina219obj[u8bitarg1].getpower() );
+      Serial.println();
+      break;
+    
+    // set
+    case 0x0C:
+      u8bitarg1 = mychipstore.getdata( progptr++ );
+      u16bitarg1 = mychipstore.getdata( progptr++ ) << 8 ;
+      u16bitarg1 |= mychipstore.getdata( progptr++ );
+      Serial.print( "set: " );
+      Serial.print( u8bitarg1 );
+      Serial.print( " to: " );
+      Serial.print( u16bitarg1 );
+      mysensorbusobj.switchto(VMVCC_0);
+      mysensorbusobj.ourmcp4725obj[u8bitarg1].setvalue( u16bitarg1 );
+      break;
+
+    // delay
+    case 0x0D:
+      u16bitarg1 = mychipstore.getdata( progptr++ ) << 8;
+      u16bitarg1 |= mychipstore.getdata( progptr++ );
+      Serial.print( "Delay: " );
+      Serial.print( u16bitarg1 );
+      Serial.println();
+      delay( u16bitarg1 );
+      break;
+
+    default:
+      Serial.println();
+      break;
+
+
+
+
+    }
+
+
+
+
+  }
+  Serial.println();
+
+}
 

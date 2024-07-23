@@ -16,6 +16,16 @@ extern systembus mysystembusobj;
 #include <pcf8575.h>
 
 
+#define ZIFBUS_VCC_BEEPER 6
+#define ZIFBUS_LEDTOGND 7
+#define ZIFBUS_MLEDTOGND_1 8
+#define ZIFBUS_MLEDTOGND_0 9
+#define ZIFBUS_MVCC_1 10
+#define ZIFBUS_MVCC_0 11
+#define ZIFBUS_VMVCC_1 12
+#define ZIFBUS_VMVCC_0 13
+#define ZIFBUS_VCC 14
+#define ZIFBUS_GND 15
 
 
 
